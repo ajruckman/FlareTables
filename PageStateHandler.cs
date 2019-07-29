@@ -12,21 +12,24 @@ namespace FlareTables
         private readonly Shared.StateHasChanged _stateUpdater;
         private          int                    _current;
 
-        private int _pageSize;
+        private int _paginationRange;
         private int _rowCount;
 
-        internal PageStateHandler(int pageSize, Shared.StateHasChanged stateUpdater)
+        internal PageStateHandler(Shared.StateHasChanged stateUpdater, int paginationRange, int pageSize)
         {
-            Current       = 0;
-            PageSize      = pageSize;
-            _stateUpdater = stateUpdater;
+            Current         = 0;
+            PaginationRange = paginationRange;
+            PageSize        = pageSize;
+            _stateUpdater   = stateUpdater;
         }
 
-        private int NumPages => (int) Math.Ceiling(_rowCount / (decimal) _pageSize);
+        internal int PageSize { get; set; }
+
+        private int NumPages => (int) Math.Ceiling(_rowCount / (decimal) PageSize);
 
         public   bool CanNext => Current + 1 < NumPages;
         public   bool CanPrev => Current - 1 >= 0;
-        internal int  Skip    => _pageSize * Current;
+        internal int  Skip    => PageSize * Current;
 
         public int Current
         {
@@ -47,22 +50,22 @@ namespace FlareTables
             }
         }
 
-        internal int PageSize
+        internal int PaginationRange
         {
-            get => _pageSize;
+            get => _paginationRange;
             set
             {
-                _pageSize = value;
+                _paginationRange = value;
                 ResetCurrentPage();
             }
         }
 
         public string Info =>
-            $"Showing {Skip + 1} to {Math.Min(Skip + _pageSize, _rowCount)} of {_rowCount:#,##0} | {NumPages} pages";
+            $"Showing {Skip + 1} to {Math.Min(Skip + PageSize, _rowCount)} of {_rowCount:#,##0} | {NumPages} pages";
 
         private void ResetCurrentPage()
         {
-            if (Current < NumPages || NumPages == 0) return;
+            if (PageSize == 0 || Current < NumPages || NumPages == 0) return;
             Current = NumPages - 1;
         }
 

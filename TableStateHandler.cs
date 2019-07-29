@@ -26,14 +26,17 @@ namespace FlareTables
 
         public readonly PageStateHandler Paginate;
 
-        public TableStateHandler(IEnumerable<object> data, Shared.StateHasChanged stateHasChanged, int pageSize = 3)
+        public TableStateHandler(IEnumerable<object>    data,
+                                 Shared.StateHasChanged stateHasChanged,
+                                 int                    paginationRange = 3,
+                                 int                    defaultPageSize = 25)
         {
             _dataType     = data.GetType().GetGenericArguments()[0];
             _props        = _dataType.GetProperties();
             _stateUpdater = stateHasChanged;
             _data         = data;
 
-            Paginate = new PageStateHandler(pageSize, _stateUpdater);
+            Paginate = new PageStateHandler(_stateUpdater, paginationRange, defaultPageSize);
         }
 
         public void InitColumn(string name)
@@ -51,7 +54,7 @@ namespace FlareTables
 
         public void UpdateColumn(UIChangeEventArgs args, string name)
         {
-            _columnData[name].Value = (string) args.Value;
+            _columnData[name].Value = (string) args.Value == "" ? null : (string) args.Value;
 
             _stateUpdater.Invoke();
         }
@@ -107,7 +110,7 @@ namespace FlareTables
                 {
                     if (value.Value == null) continue;
 
-                    bool matches = Match(value.Property.GetValue(v).ToString(), value.Value);
+                    bool matches = Match(value.Property.GetValue(v)?.ToString(), value.Value);
                     if (!matches) return false;
                 }
 
@@ -136,7 +139,7 @@ namespace FlareTables
 
         private static bool Match(string str, string term)
         {
-            return str.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0;
+            return str?.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         private sealed class Column
