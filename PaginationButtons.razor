@@ -1,0 +1,27 @@
+@using System.Diagnostics.CodeAnalysis
+@using Microsoft.AspNetCore.Components
+@functions {
+
+    [Parameter]
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
+    private TableStateHandler TableState { get; set; }
+
+}
+
+<div class="DataTablePaginationButtonContainer">
+    <button onclick="@TableState.Paginate.First" disabled="@(!TableState.Paginate.CanPrev)" class="DataTablePaginateButton DataTablePaginateButton_First">First</button>
+    <button onclick="@TableState.Paginate.Previous" disabled="@(!TableState.Paginate.CanPrev)" class="DataTablePaginateButton DataTablePaginateButton_Previous">Previous</button>
+    @foreach (int i in TableState.Paginate.Pages())
+    {
+        if (i == -1)
+        {
+            <button class="DataTablePaginateButton DataTablePaginateButton_Skipped" disabled="disabled">...</button>
+        }
+        else
+        {
+            <button onclick="@(() => TableState.Paginate.Jump(i))" class="DataTablePaginateButton @(TableState.Paginate.Current == i ? "DataTablePaginateButton_Current" : "")">@(i + 1)</button>
+        }
+    }
+    <button onclick="@TableState.Paginate.Next" disabled="@(!TableState.Paginate.CanNext)" class="DataTablePaginateButton DataTablePaginateButton_Next">Next</button>
+    <button onclick="@TableState.Paginate.Last" disabled="@(!TableState.Paginate.CanNext)" class="DataTablePaginateButton DataTablePaginateButton_Last">Last</button>
+</div>
