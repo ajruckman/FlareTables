@@ -122,9 +122,11 @@ namespace FlareTables
                 {
                     PropertyInfo prop = _props.First(v => v.Name == s);
                     if (value.SortDir == 'a')
-                        data = data.OrderBy(v => prop.GetValue(v)).ToList();
+                        Sort(ref data, prop, false);
+//                        data = data.OrderBy(v => prop.GetValue(v)).ToList();
                     else if (value.SortDir == 'd')
-                        data = data.OrderByDescending(v => prop.GetValue(v)).ToList();
+                        Sort(ref data, prop, true);
+//                        data = data.OrderByDescending(v => prop.GetValue(v)).ToList();
                     break;
                 }
 
@@ -137,6 +139,26 @@ namespace FlareTables
             return data;
         }
 
+        private static void Sort(ref IEnumerable<object> data, PropertyInfo prop, bool desc)
+        {
+            IEnumerable<object> enumerable = data as object[] ?? data.ToArray();
+            
+            if (!enumerable.Any()) return;
+
+            bool isSortable = enumerable.First() is IComparable;
+            
+            if (!desc)
+                if (isSortable)
+                    data = enumerable.OrderBy(v => prop.GetValue(v)).ToList();
+                else
+                    data = enumerable.OrderBy(v => prop.GetValue(v).ToString());
+            else
+                if (isSortable)
+                    data = enumerable.OrderByDescending(v => prop.GetValue(v)).ToList();
+                else
+                    data = enumerable.OrderByDescending(v => prop.GetValue(v).ToString());
+        }
+        
         private static bool Match(string str, string term)
         {
             return str?.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0;
