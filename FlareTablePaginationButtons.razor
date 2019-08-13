@@ -1,3 +1,4 @@
+@using System
 @using System.Diagnostics.CodeAnalysis
 @using Microsoft.AspNetCore.Components
 @functions {
@@ -9,7 +10,6 @@
 }
 
 <div class="FlareTablePaginationButtonContainer">
-    <button onclick="@TableState.Paginate.First" disabled="@(!TableState.Paginate.CanPrev)" class="FlareTablePaginateButton FlareTablePaginateButton_First">First</button>
     <button onclick="@TableState.Paginate.Previous" disabled="@(!TableState.Paginate.CanPrev)" class="FlareTablePaginateButton FlareTablePaginateButton_Previous">Previous</button>
     @foreach (int i in TableState.Paginate.Pages())
     {
@@ -23,5 +23,4 @@
         }
     }
     <button onclick="@TableState.Paginate.Next" disabled="@(!TableState.Paginate.CanNext)" class="FlareTablePaginateButton FlareTablePaginateButton_Next">Next</button>
-    <button onclick="@TableState.Paginate.Last" disabled="@(!TableState.Paginate.CanNext)" class="FlareTablePaginateButton FlareTablePaginateButton_Last">Last</button>
 </div>

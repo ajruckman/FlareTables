@@ -94,58 +94,62 @@ namespace FlareTables
             Current = page;
         }
 
-        // Algorithm in part by @dunika from:
-        // https://gist.github.com/kottenator/9d936eb3e4e3c3e02598#gistcomment-2607388
         public IEnumerable<int> Pages()
         {
-            const int     listLength = 7;
-            const decimal offset     = (decimal) (listLength / 2.0);
+            const int radius   = 3;
+            const int diameter = 2 * radius + 1;
+            const int offset   = (int) (diameter / 2.0);
 
-            decimal start = Current - Math.Floor(offset);
-            decimal end   = Current + Math.Ceiling(offset);
+            List<int> pages = new List<int>();
 
-            if (NumPages <= listLength)
+            int start, end;
+
+            if (NumPages <= diameter)
             {
                 start = 0;
-                end   = NumPages;
+                end   = Math.Max(NumPages - 3, NumPages);
+
+                pages.AddRange(Enumerable.Range(start, end - start).ToList());
             }
             else if (Current <= offset)
             {
                 start = 0;
-                end   = listLength;
+                end   = diameter - 1;
+
+                pages.AddRange(Enumerable.Range(start, end - start - 1).ToList());
+
+                pages.Add(-1);
+                pages.Add(NumPages - 1);
             }
             else if (Current + offset >= NumPages)
             {
-                start = NumPages - listLength;
-                end   = NumPages;
+                start = NumPages - diameter;
+                end   = NumPages - 1;
+
+                pages.Add(0);
+                pages.Add(-1);
+
+                pages.AddRange(Enumerable.Range(start + 2, end - start - 1).ToList());
+            }
+            else
+            {
+                start = Current - radius + 2;
+                end   = Current + radius - 2;
+
+                pages.Add(0);
+                pages.Add(-1);
+
+                pages.AddRange(Enumerable.Range(start, end - start + 1).ToList());
+
+                if (Current == NumPages - radius - 1)
+                    pages.Add(NumPages - 2);
+                else
+                    pages.Add(-1);
+
+                pages.Add(NumPages - 1);
             }
 
-            List<int> range = Enumerable.Range((int) start, (int) (end - start)).ToList();
-
-            if (start == 1)
-            {
-//                range.RemoveAt(range.Count - 1);
-                range.Insert(0, 0);
-            }
-            else if (start > 0)
-            {
-//                range = range.Skip(1).ToList();
-//                range.RemoveAt(range.Count - 1);
-                range.Insert(0, -1);
-                range.Insert(0, 0);
-            }
-
-            if (end == NumPages - 1)
-            {
-                range.Add(NumPages - 1);
-            }
-            else if (end < NumPages)
-            {
-                range.Add(-1);
-                range.Add(NumPages - 1);
-            }
-
-            return range;
+            return pages;
         }
     }
 }

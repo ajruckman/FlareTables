@@ -123,10 +123,8 @@ namespace FlareTables
                     PropertyInfo prop = _props.First(v => v.Name == s);
                     if (value.SortDir == 'a')
                         Sort(ref data, prop, false);
-//                        data = data.OrderBy(v => prop.GetValue(v)).ToList();
                     else if (value.SortDir == 'd')
                         Sort(ref data, prop, true);
-//                        data = data.OrderByDescending(v => prop.GetValue(v)).ToList();
                     break;
                 }
 
@@ -151,12 +149,12 @@ namespace FlareTables
                 if (isSortable)
                     data = enumerable.OrderBy(v => prop.GetValue(v)).ToList();
                 else
-                    data = enumerable.OrderBy(v => prop.GetValue(v).ToString());
+                    data = enumerable.OrderBy(v => prop.GetValue(v)?.ToString());
             else
                 if (isSortable)
                     data = enumerable.OrderByDescending(v => prop.GetValue(v)).ToList();
                 else
-                    data = enumerable.OrderByDescending(v => prop.GetValue(v).ToString());
+                    data = enumerable.OrderByDescending(v => prop.GetValue(v)?.ToString());
         }
         
         private static bool Match(string str, string term)
