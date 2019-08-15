@@ -20,21 +20,27 @@ namespace FlareTables
         private readonly Dictionary<string, Column> _columnData = new Dictionary<string, Column>();
         private readonly IEnumerable<object>        _data;
 
-        private readonly Type                   _dataType;
-        private readonly PropertyInfo[]         _props;
-        private readonly Shared.StateHasChanged _stateUpdater;
+        private readonly Type                    _dataType;
+        private readonly PropertyInfo[]          _props;
+        private readonly Shared.StateHasChanged  _stateUpdater;
+        private readonly IEnumerable<ColumnSpec> _columnSpecs;
 
         public readonly PageStateHandler Paginate;
 
-        public TableStateHandler(IEnumerable<object>    data,
-                                 Shared.StateHasChanged stateHasChanged,
-                                 int                    paginationRange = 3,
-                                 int                    defaultPageSize = 25)
+        public TableStateHandler(
+            IEnumerable<object>     data,
+            Shared.StateHasChanged  stateHasChanged,
+            int                     paginationRange = 3,
+            int                     defaultPageSize = 25,
+            IEnumerable<ColumnSpec> columnSpecs     = null
+        )
         {
-            _dataType     = data.GetType().GetGenericArguments()[0];
-            _props        = _dataType.GetProperties();
-            _stateUpdater = stateHasChanged;
             _data         = data;
+            _stateUpdater = stateHasChanged;
+            _columnSpecs  = columnSpecs;
+
+            _dataType = data.GetType().GetGenericArguments()[0];
+            _props    = _dataType.GetProperties();
 
             Paginate = new PageStateHandler(_stateUpdater, paginationRange, defaultPageSize);
         }
@@ -137,26 +143,32 @@ namespace FlareTables
             return data;
         }
 
+        public string Width(string name)
+        {
+            return _columnSpecs?.Any(v => v.Target == name) == true
+                ? _columnSpecs.Single(v => v.Target == name).Width
+                : "";
+        }
+
         private static void Sort(ref IEnumerable<object> data, PropertyInfo prop, bool desc)
         {
             IEnumerable<object> enumerable = data as object[] ?? data.ToArray();
-            
+
             if (!enumerable.Any()) return;
 
             bool isSortable = enumerable.First() is IComparable;
-            
+
             if (!desc)
                 if (isSortable)
                     data = enumerable.OrderBy(v => prop.GetValue(v)).ToList();
                 else
                     data = enumerable.OrderBy(v => prop.GetValue(v)?.ToString());
+            else if (isSortable)
+                data = enumerable.OrderByDescending(v => prop.GetValue(v)).ToList();
             else
-                if (isSortable)
-                    data = enumerable.OrderByDescending(v => prop.GetValue(v)).ToList();
-                else
-                    data = enumerable.OrderByDescending(v => prop.GetValue(v)?.ToString());
+                data = enumerable.OrderByDescending(v => prop.GetValue(v)?.ToString());
         }
-        
+
         private static bool Match(string str, string term)
         {
             return str?.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0;
