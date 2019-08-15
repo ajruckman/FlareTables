@@ -4,8 +4,8 @@
 
     [Parameter]
     [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
-    private TableStateHandler TableState { get; set; }
+    public TableStateHandler TableState { get; set; }
 
 }
 
-<button class="FlareTableResetColumns" onclick="@TableState.ResetSorting">Reset columns</button>
+<button class="FlareTableResetColumns" @onclick="@TableState.ResetSorting">Reset columns</button>

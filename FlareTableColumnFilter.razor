@@ -4,15 +4,15 @@
 
     [Parameter]
     [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
-    private TableStateHandler TableState { get; set; }
+    public TableStateHandler TableState { get; set; }
 
     [Parameter]
     [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
-    private string FieldName { get; set; }
+    public string FieldName { get; set; }
 
 }
 
 <div class="FlareTableInputContainer">
-    <input class="FlareTableFilterInput" type="text" name="BlazorTable_Filter_@FieldName" value="@TableState.ColumnValue(FieldName)" oninput="@(args => { TableState.UpdateColumn(args, FieldName); })">
-    <button class="FlareTableSortDirIndicator @TableState.SortDir(FieldName)" onclick="@(() => TableState.UpdateSort(FieldName))">Sort</button>
+    <input class="FlareTableFilterInput" type="text" name="BlazorTable_Filter_@FieldName" value="@TableState.ColumnValue(FieldName)" @oninput="@(args => { TableState.UpdateColumn(args, FieldName); })"/>
+    <button class="FlareTableSortDirIndicator @TableState.SortDir(FieldName)" @onclick="@(() => TableState.UpdateSort(FieldName))">Sort</button>
 </div>

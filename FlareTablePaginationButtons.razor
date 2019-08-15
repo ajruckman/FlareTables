@@ -5,12 +5,12 @@
 
     [Parameter]
     [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
-    private TableStateHandler TableState { get; set; }
+    public TableStateHandler TableState { get; set; }
 
 }
 
 <div class="FlareTablePaginationButtonContainer">
-    <button onclick="@TableState.Paginate.Previous" disabled="@(!TableState.Paginate.CanPrev)" class="FlareTablePaginateButton FlareTablePaginateButton_Previous">Previous</button>
+    <button @onclick="@TableState.Paginate.Previous" disabled="@(!TableState.Paginate.CanPrev)" class="FlareTablePaginateButton FlareTablePaginateButton_Previous">Previous</button>
     @foreach (int i in TableState.Paginate.Pages())
     {
         if (i == -1)
@@ -19,8 +19,8 @@
         }
         else
         {
-            <button onclick="@(() => TableState.Paginate.Jump(i))" class="FlareTablePaginateButton @(TableState.Paginate.Current == i ? "FlareTablePaginateButton_Current" : "")">@(i + 1)</button>
+            <button @onclick="@(() => TableState.Paginate.Jump(i))" class="FlareTablePaginateButton @(TableState.Paginate.Current == i ? "FlareTablePaginateButton_Current" : "")">@(i + 1)</button>
         }
     }
-    <button onclick="@TableState.Paginate.Next" disabled="@(!TableState.Paginate.CanNext)" class="FlareTablePaginateButton FlareTablePaginateButton_Next">Next</button>
+    <button @onclick="@TableState.Paginate.Next" disabled="@(!TableState.Paginate.CanNext)" class="FlareTablePaginateButton FlareTablePaginateButton_Next">Next</button>
 </div>
