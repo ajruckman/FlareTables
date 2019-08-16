@@ -23,7 +23,6 @@ namespace FlareTables
         private readonly Type                    _dataType;
         private readonly PropertyInfo[]          _props;
         private readonly Shared.StateHasChanged  _stateUpdater;
-        private readonly IEnumerable<ColumnSpec> _columnSpecs;
 
         public readonly PageStateHandler Paginate;
 
@@ -31,13 +30,11 @@ namespace FlareTables
             IEnumerable<object>     data,
             Shared.StateHasChanged  stateHasChanged,
             int                     paginationRange = 3,
-            int                     defaultPageSize = 25,
-            IEnumerable<ColumnSpec> columnSpecs     = null
+            int                     defaultPageSize = 25
         )
         {
             _data         = data;
             _stateUpdater = stateHasChanged;
-            _columnSpecs  = columnSpecs;
 
             _dataType = data.GetType().GetGenericArguments()[0];
             _props    = _dataType.GetProperties();
@@ -141,13 +138,6 @@ namespace FlareTables
             data = enumerable.Skip(Paginate.Skip).Take(Paginate.PageSize).ToList();
 
             return data;
-        }
-
-        public string Width(string name)
-        {
-            return _columnSpecs?.Any(v => v.Target == name) == true
-                ? _columnSpecs.Single(v => v.Target == name).Width
-                : "";
         }
 
         private static void Sort(ref IEnumerable<object> data, PropertyInfo prop, bool desc)
